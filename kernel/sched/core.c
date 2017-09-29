@@ -3399,6 +3399,13 @@ static void __sched notrace __schedule(bool preempt)
 		++*switch_count;
 
 		trace_sched_switch(preempt, prev, next);
+
+		#ifdef CONFIG_CISTER_TRACING
+		cister_trace(SWITCH_AWAY, prev);
+		cister_trace(SWITCH_TO, next);
+		#endif
+
+
 		rq = context_switch(rq, prev, next, cookie); /* unlocks the rq */
 	} else {
 		lockdep_unpin_lock(&rq->lock, cookie);
@@ -3985,6 +3992,13 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
+
+
+	#ifdef CONFIG_CISTER_RT_SCHEDULERS
+	if(p->policy == SCHED_EDF)
+		p->sched_class = &edf_sched_class;
+	#endif
+	
 }
 
 static void
@@ -7596,6 +7610,11 @@ void __init sched_init(void)
 		init_cfs_rq(&rq->cfs);
 		init_rt_rq(&rq->rt);
 		init_dl_rq(&rq->dl);
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+		init_edf_rq(&rq->edf);
+#endif
+
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		root_task_group.shares = ROOT_TASK_GROUP_LOAD;
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);

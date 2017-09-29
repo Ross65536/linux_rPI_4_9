@@ -406,6 +406,11 @@
 		CALL(sys_pkey_mprotect)
 /* 395 */	CALL(sys_pkey_alloc)
 		CALL(sys_pkey_free)
+#ifdef CONFIG_CISTER_FRAMEWORK
+		CALL(sys_cister_tracing)
+		CALL(sys_cister_set_task_id)
+		CALL(sys_cister_set_task_rd)
+#endif
 #ifndef syscalls_counted
 .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls
 #define syscalls_counted

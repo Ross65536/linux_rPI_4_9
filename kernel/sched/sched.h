@@ -12,6 +12,15 @@
 #include <linux/tick.h>
 #include <linux/slab.h>
 
+
+#ifdef CONFIG_CISTER_TRACING
+#include "../cister/trace.h"
+#endif
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+#include "../cister/edf_rq.h"
+#endif
+
 #include "cpupri.h"
 #include "cpudeadline.h"
 #include "cpuacct.h"
@@ -123,10 +132,23 @@ static inline int dl_policy(int policy)
 {
 	return policy == SCHED_DEADLINE;
 }
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+static inline int edf_policy(int policy)
+{
+	return policy == SCHED_EDF;
+}
+#endif
+
 static inline bool valid_policy(int policy)
 {
 	return idle_policy(policy) || fair_policy(policy) ||
-		rt_policy(policy) || dl_policy(policy);
+	rt_policy(policy) || dl_policy(policy)
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+	|| edf_policy(policy)
+#endif
+	;
 }
 
 static inline int task_has_rt_policy(struct task_struct *p)
@@ -625,6 +647,10 @@ struct rq {
 	struct cfs_rq cfs;
 	struct rt_rq rt;
 	struct dl_rq dl;
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+	struct edf_rq edf;
+#endif
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/* list of leaf cfs_rq on this cpu: */
@@ -1289,6 +1315,9 @@ extern const struct sched_class rt_sched_class;
 extern const struct sched_class fair_sched_class;
 extern const struct sched_class idle_sched_class;
 
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+extern const struct sched_class edf_sched_class;
+#endif
 
 #ifdef CONFIG_SMP
 

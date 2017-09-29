@@ -62,6 +62,10 @@ struct sched_param {
 
 #include <asm/processor.h>
 
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+#include "../../kernel/cister/edf_task.h"
+#endif
+
 #define SCHED_ATTR_SIZE_VER0	48	/* sizeof first published struct */
 
 /*
@@ -1519,6 +1523,10 @@ struct task_struct {
 	struct task_group *sched_task_group;
 #endif
 	struct sched_dl_entity dl;
+
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+	struct edf_task edf_task;
+#endif
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	/* list of struct preempt_notifier: */
