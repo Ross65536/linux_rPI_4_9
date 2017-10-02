@@ -32,7 +32,11 @@
 #define __NR_write			(__NR_SYSCALL_BASE+  4)
 #define __NR_open			(__NR_SYSCALL_BASE+  5)
 #define __NR_close			(__NR_SYSCALL_BASE+  6)
-					/* 7 was sys_waitpid */
+
+#ifdef CONFIG_CISTER_FRAMEWORK
+#define __NR_cister_tracing    (__NR_SYSCALL_BASE+ 7)	/* 7 was sys_waitpid */
+#endif
+
 #define __NR_creat			(__NR_SYSCALL_BASE+  8)
 #define __NR_link			(__NR_SYSCALL_BASE+  9)
 #define __NR_unlink			(__NR_SYSCALL_BASE+ 10)
@@ -56,8 +60,12 @@
 					/* 28 was sys_fstat */
 #define __NR_pause			(__NR_SYSCALL_BASE+ 29)
 #define __NR_utime			(__NR_SYSCALL_BASE+ 30)
-					/* 31 was sys_stty */
-					/* 32 was sys_gtty */
+
+#ifdef CONFIG_CISTER_FRAMEWORK
+#define __NR_cister_set_task_id     (__NR_SYSCALL_BASE+ 31)
+#define __NR_cister_set_task_rd     (__NR_SYSCALL_BASE+ 32)
+#endif
+
 #define __NR_access			(__NR_SYSCALL_BASE+ 33)
 #define __NR_nice			(__NR_SYSCALL_BASE+ 34)
 					/* 35 was sys_ftime */

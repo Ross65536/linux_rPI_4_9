@@ -9,7 +9,7 @@ config CISTER_TRACING
 	depends on CISTER_FRAMEWORK
 
 config CISTER_RT_SCHEDULERS
-	bool "CISTER scheduling policy:EDF"
+	bool "CISTER scheduling policies:EDF"
 	default y
 	depends on CISTER_FRAMEWORK
 

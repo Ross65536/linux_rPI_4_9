@@ -1,5 +1,7 @@
-#include "../sched/sched.h"
 #include <linux/rbtree.h>
+#include <linux/types.h>
+
+#include "../sched/sched.h"
 #include "defs.h"
 
 /*
@@ -62,7 +64,7 @@ static struct task_struct* get_first_task_from_root(struct rb_root* root)
 static void enqueue_task_edf(struct rq *rq, struct task_struct *p, int flags)
 {
 	
-	ktime_t time_now = ktime_to_ns(ktime_get());
+	s64 time_now = ktime_to_ns(ktime_get());
 	
 	p->edf_task.d = time_now + p->edf_task.D; //setting absolute time
 
@@ -129,7 +131,7 @@ static void check_preempt_curr_edf(struct rq *rq, struct task_struct *p, int fla
 	}
 }
 
-static struct task_struct *pick_next_task_edf(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+static struct task_struct *pick_next_task_edf(struct rq *rq, struct task_struct *prev, struct pin_cookie cookie)
 {
 	struct task_struct * p = NULL;
 	spin_lock(&rq->edf.lock);

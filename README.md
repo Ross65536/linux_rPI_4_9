@@ -60,10 +60,14 @@ to install the kernel
 ## Modifications
 
 ### Syscalls
+decimal:
+7	sys_cister_tracing(int boolean1or0)
+31	sys_cister_set_task_id(int custom_id)
+32	sys_cister_set_task_rd(unsigned int relative_deadline) // only goes up to 4 seconds
 
-397	sys_cister_tracing(int boolean1or0)
-398	sys_cister_set_task_id(int custom_id)
-399	sys_cister_set_task_rd(unsigned int relative_deadline) // only goes up to 4 seconds
+#define __NR_cister_tracing    (__NR_SYSCALL_BASE+ 7)
+#define __NR_cister_set_task_id     (__NR_SYSCALL_BASE+ 31)
+#define __NR_cister_set_task_rd     (__NR_SYSCALL_BASE+ 32)
 
 ### Scheduler Numbers
 
