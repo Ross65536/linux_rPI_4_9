@@ -3995,8 +3995,8 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 
 
 	#ifdef CONFIG_CISTER_RT_SCHEDULERS
-	if(p->policy == SCHED_EDF)
-		p->sched_class = &edf_sched_class;
+	if(p->policy == SCHED_RTS)
+		p->sched_class = &rts_sched_class;
 	#endif
 	
 }
@@ -7612,7 +7612,7 @@ void __init sched_init(void)
 		init_dl_rq(&rq->dl);
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-		init_edf_rq(&rq->edf);
+		init_rt_rqs(&rq->rt_rqs);
 #endif
 
 #ifdef CONFIG_FAIR_GROUP_SCHED

@@ -41,7 +41,7 @@
 #define SCHED_DEADLINE		6
 
 #if defined(CONFIG_CISTER_RT_SCHEDULERS)
-#define SCHED_EDF	7
+#define SCHED_RTS	7
 #endif
 
 

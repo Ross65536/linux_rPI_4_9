@@ -18,7 +18,7 @@
 #endif
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-#include "../cister/edf_rq.h"
+#include "../cister/rt_rqs.h"
 #endif
 
 #include "cpupri.h"
@@ -134,9 +134,9 @@ static inline int dl_policy(int policy)
 }
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-static inline int edf_policy(int policy)
+static inline int rt_policies(int policy)
 {
-	return policy == SCHED_EDF;
+	return policy == SCHED_RTS;
 }
 #endif
 
@@ -146,7 +146,7 @@ static inline bool valid_policy(int policy)
 	rt_policy(policy) || dl_policy(policy)
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-	|| edf_policy(policy)
+	|| rt_policies(policy)
 #endif
 	;
 }
@@ -649,7 +649,7 @@ struct rq {
 	struct dl_rq dl;
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-	struct edf_rq edf;
+	struct rt_rqs rt_rqs;
 #endif
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
@@ -1316,7 +1316,7 @@ extern const struct sched_class fair_sched_class;
 extern const struct sched_class idle_sched_class;
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-extern const struct sched_class edf_sched_class;
+extern const struct sched_class rts_sched_class;
 #endif
 
 #ifdef CONFIG_SMP

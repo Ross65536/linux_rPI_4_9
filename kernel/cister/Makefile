@@ -2,6 +2,6 @@
 
 obj-$(CONFIG_CISTER_TRACING) += trace.o
 
-obj-$(CONFIG_CISTER_RT_SCHEDULERS) += edf_rq.o edf_sched.o edf_task.o
+obj-$(CONFIG_CISTER_RT_SCHEDULERS) += rt_rqs.o rt_sched.o rt_task.o
 
 obj-y += syscalls.o

@@ -97,9 +97,9 @@ static int enqueue(enum evt event, unsigned long long time, struct task_struct *
 	strcpy(trace.events[trace.write_item].comm, p->comm);
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-	trace.events[trace.write_item].task_id = p->edf_task.id;
-	trace.events[trace.write_item].d = p->edf_task.d;
-	trace.events[trace.write_item].D = p->edf_task.D;
+	trace.events[trace.write_item].task_id = p->rt_task.id;
+	trace.events[trace.write_item].d = p->rt_task.d;
+	trace.events[trace.write_item].D = p->rt_task.D;
 #endif
 
 	increment(&trace.write_item);
@@ -150,7 +150,7 @@ void cister_trace(enum evt event, struct task_struct *p)
 		return;
 
 #if defined(CONFIG_CISTER_RT_SCHEDULERS)
-	if (p->policy != SCHED_EDF)
+	if (p->policy != SCHED_RTS)
 		return;
 #else
 	return;

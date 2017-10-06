@@ -59,6 +59,20 @@ to install the kernel
 
 ## Modifications
 
+./kernel/sched/rt.c:2325:#if defined(CONFIG_CISTER_RT_SCHEDULERS)
+./kernel/sched/core.c:3997:    #ifdef CONFIG_CISTER_RT_SCHEDULERS
+./kernel/sched/core.c:7614:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./kernel/sched/sched.h:20:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./kernel/sched/sched.h:136:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./kernel/sched/sched.h:148:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./kernel/sched/sched.h:651:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./include/config/auto.conf:312:CONFIG_CISTER_RT_SCHEDULERS=y
+./include/uapi/linux/sched.h:43:#if defined(CONFIG_CISTER_RT_SCHEDULERS)
+./include/generated/autoconf.h:314:#define CONFIG_CISTER_RT_SCHEDULERS 1
+./include/linux/sched.h:65:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./include/linux/sched.h:1527:#ifdef CONFIG_CISTER_RT_SCHEDULERS
+./include/uapi/linux/sched.h:44
+
 ### Syscalls
 decimal:
 7	sys_cister_tracing(int boolean1or0)
@@ -71,7 +85,7 @@ decimal:
 
 ### Scheduler Numbers
 
-#define SCHED_EDF	7
+#define SCHED_RTS	7
 
 ## NOTES
 
