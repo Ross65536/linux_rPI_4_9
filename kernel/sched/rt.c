@@ -2323,7 +2323,7 @@ static unsigned int get_rr_interval_rt(struct rq *rq, struct task_struct *task)
 
 const struct sched_class rt_sched_class = {
 #if defined(CONFIG_CISTER_RT_SCHEDULERS)
-	.next = &rt_sched_class,
+	.next = &rts_sched_class,
 #else
 	.next = &fair_sched_class,
 #endif

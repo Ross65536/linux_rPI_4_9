@@ -1,3 +1,5 @@
+#ifndef __K_SHED_SCHED_H__
+#define __K_SHED_SCHED_H__
 
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
@@ -1832,4 +1834,7 @@ static inline void cpufreq_update_this_cpu(struct rq *rq, unsigned int flags) {}
 #endif
 #else /* arch_scale_freq_capacity */
 #define arch_scale_freq_invariant()	(false)
+#endif
+
+
 #endif

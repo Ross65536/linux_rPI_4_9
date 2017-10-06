@@ -3,12 +3,15 @@
 
 #include <linux/sched.h>
 
+#include "rt_task.h"
+
 
 #define TRACE_ENTRY_NAME "cister_trace"
 #define TRACE_BUFFER_SIZE 1000
 #define TRACE_BUFFER_LEN 200
 
-enum evt{
+enum evt
+{
 	SCHED_TICK = 0,
 	SWITCH_AWAY,
 	SWITCH_TO,
@@ -30,8 +33,8 @@ struct trace_evt{
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
 	int task_id;
-	unsigned long long d;
-	unsigned long long D;
+	enum rt_scheduler scheduler;
+	union rt_data rt_data;
 #endif
 };
 

@@ -9,9 +9,9 @@ void set_task_id(int id)
 }
 
 void set_task_D(unsigned long long relative_deadline){
-	current->rt_task.D = relative_deadline;
+	current->rt_task.data.edf.D = relative_deadline;
 	
 	#ifdef CONSOLE_DEBUGGING 
-   	printk(KERN_DEBUG "set_task_D: %llu\n", current->rt_task.D);
+   	printk(KERN_DEBUG "set_task_D: %llu\n", current->rt_task.data.edf.D);
 	#endif
 }
