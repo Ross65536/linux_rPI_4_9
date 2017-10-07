@@ -80,7 +80,10 @@ to install the kernel
 decimal:
 7	sys_cister_tracing(int boolean1or0)
 31	sys_cister_set_task_id(int custom_id)
-32	sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, long subscheduler_parameter) 
+32	sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, unsigned long subscheduler_parameter_lower_4_bytes, unsigned long subscheduler_parameter_higher_4_bytes) 
+//rt_subscheduler is 0, 1 or 2: EDF, DM, RM respectively
+//subscheduler_parameter is a 8 byte unsigned long long
+//it should be relative deadline for EDF and DM, and period for RM
 
 #define __NR_cister_tracing    (__NR_SYSCALL_BASE+ 7)
 #define __NR_cister_set_task_id     (__NR_SYSCALL_BASE+ 31)
@@ -92,9 +95,9 @@ SCHED_RTS	7
 
 ### Implemented Real-Time Schedulers
 
-Earliest Deadline First (EDF_INDEX) subscheduler nr.: 0 based on absolute deadline (d) which is updated on an enqueue
-Deadline Monotonic (DM_INDEX) subscheduler nr.: 1 based on relative deadline (D)
-Rate Monotonic (RM_INDEX) subscheduler nr.: 2 based on Period (T)
+Earliest Deadline First (EDF_INDEX = 0)  0 based on absolute deadline (d) which is updated on an enqueue
+Deadline Monotonic (DM_INDEX = 1) based on relative deadline (D)
+Rate Monotonic (RM_INDEX = 2) based on Period (T)
 
 ## NOTES
 

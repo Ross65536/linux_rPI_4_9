@@ -2,11 +2,6 @@
 #include "rt_task.h"
 #include "defs.h"
 
-void set_task_id(int id)
-{
-	current->rt_task.id = id;
-	
-}
 
 int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_scheduler scheduler, unsigned long long param)
 {
