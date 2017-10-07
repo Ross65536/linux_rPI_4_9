@@ -45,6 +45,14 @@ static void sprint_rt_tree_data(int * len, char* buffer, struct trace_evt* evt)
 			*len += sprintf(buffer + *len, "d,%llu,", evt->tree_key);
 			*len += sprintf(buffer + *len, "D,%llu,", evt->rt_data.edf.D);
 			break;
+		case DM_INDEX:
+			*len += sprintf(buffer + *len, "rt_sched,%s,", "DM");
+			*len += sprintf(buffer + *len, "D,%llu,", evt->tree_key);
+			break;
+		case RM_INDEX:
+			*len += sprintf(buffer + *len, "rt_sched,%s,", "RM");
+			*len += sprintf(buffer + *len, "T,%llu,", evt->tree_key);
+			break;
 		default:
 			break;
 	}	

@@ -19,7 +19,6 @@ static void dequeue_task_rts(struct rq *rq, struct task_struct *old_task, int fl
 
 static void check_preempt_curr_rts(struct rq *rq, struct task_struct *p, int flags)
 {
-	printk(KERN_DEBUG "check_preempt_curr_rt: hit %d \n", p->policy);
 
 	switch(rq->curr->policy){
 		case SCHED_DEADLINE:

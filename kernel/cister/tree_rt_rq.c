@@ -65,15 +65,12 @@ static struct task_struct* get_first_task_from_root(struct rb_root* root)
 	first_node = rb_first(root);
 	if(first_node == NULL)
 	{
-		PRINT_DEBUG_MESSAGE("most priority is null \n");
 		return NULL;
 	}
 
 	first_rt_task = rb_entry(first_node, struct rt_task, node);
 	
 	p = container_of(first_rt_task, struct task_struct, rt_task);
-
-	PRINT_DEBUG_MESSAGE("most priority is NOT null \n");
 
 	return p;
 }

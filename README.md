@@ -88,13 +88,13 @@ decimal:
 
 ### Scheduler Numbers
 
-#define SCHED_RTS	7
+SCHED_RTS	7
 
 ### Implemented Real-Time Schedulers
 
-Earliest Deadline First (EDF_index) subscheduler nr.: 0 based on absolute deadline (d) which is updated on an enqueue
-Deadline Monotonic (DM_index) subscheduler nr.: 1 based on relative deadline (D)
-Rate Monotonic (RM_index) subscheduler nr.: 2 based on Period (T)
+Earliest Deadline First (EDF_INDEX) subscheduler nr.: 0 based on absolute deadline (d) which is updated on an enqueue
+Deadline Monotonic (DM_INDEX) subscheduler nr.: 1 based on relative deadline (D)
+Rate Monotonic (RM_INDEX) subscheduler nr.: 2 based on Period (T)
 
 ## NOTES
 
