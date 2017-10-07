@@ -63,7 +63,7 @@
 
 #ifdef CONFIG_CISTER_FRAMEWORK
 #define __NR_cister_set_task_id     (__NR_SYSCALL_BASE+ 31)
-#define __NR_cister_set_task_rd     (__NR_SYSCALL_BASE+ 32)
+#define __NR_cister_set_rt_subscheduler_and_params     (__NR_SYSCALL_BASE+ 32)
 #endif
 
 #define __NR_access			(__NR_SYSCALL_BASE+ 33)

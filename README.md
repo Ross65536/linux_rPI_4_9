@@ -5,7 +5,7 @@ taken [from](https://www.raspberrypi.org/documentation/linux/kernel/building.md)
 
 ### Burn Raspbian image on SDCAR of the raspberry PI
 
-download from website and follow their tutorial to burn a image
+download from Raspberry website and follow their tutorial to burn a image
 
 ### INSTALL TOOLCHAIN
 
@@ -72,20 +72,29 @@ to install the kernel
 ./include/linux/sched.h:65:#ifdef CONFIG_CISTER_RT_SCHEDULERS
 ./include/linux/sched.h:1527:#ifdef CONFIG_CISTER_RT_SCHEDULERS
 ./include/uapi/linux/sched.h:44
+./arch/arm/include/uapi/asm/unistd.h:66:#define __NR_cister_set_task_rd     (__NR_SYSCALL_BASE+ 32)
+./arch/arm/kernel/calls.S:49:		CALL(sys_cister_set_rt_subscheduler_and_params)
+
 
 ### Syscalls
 decimal:
 7	sys_cister_tracing(int boolean1or0)
 31	sys_cister_set_task_id(int custom_id)
-32	sys_cister_set_task_rd(unsigned int relative_deadline) // only goes up to 4 seconds
+32	sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, long subscheduler_parameter) 
 
 #define __NR_cister_tracing    (__NR_SYSCALL_BASE+ 7)
 #define __NR_cister_set_task_id     (__NR_SYSCALL_BASE+ 31)
-#define __NR_cister_set_task_rd     (__NR_SYSCALL_BASE+ 32)
+#define __NR_cister_set_rt_subscheduler_and_params     (__NR_SYSCALL_BASE+ 32)
 
 ### Scheduler Numbers
 
 #define SCHED_RTS	7
+
+### Implemented Real-Time Schedulers
+
+Earliest Deadline First (EDF_index) subscheduler nr.: 0 based on absolute deadline (d) which is updated on an enqueue
+Deadline Monotonic (DM_index) subscheduler nr.: 1 based on relative deadline (D)
+Rate Monotonic (RM_index) subscheduler nr.: 2 based on Period (T)
 
 ## NOTES
 

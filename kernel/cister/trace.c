@@ -5,6 +5,7 @@
 
 #include "trace.h"
 #include "rt_rqs.h"
+#include "rt_rqs_functions.h"
 
 ///////////////////////////////////////////////////////////////////////
 // Ring Buffer implementation
@@ -35,13 +36,13 @@ static int is_full(int r, int w)
 	return write == r;
 }
 
-void print_rt_tree_data(int * len, char* buffer, struct trace_evt* evt)
+static void sprint_rt_tree_data(int * len, char* buffer, struct trace_evt* evt)
 {
 	switch (evt->scheduler) 
 	{
 		case EDF_INDEX:
 			*len += sprintf(buffer + *len, "rt_sched,%s,", "EDF");
-			*len += sprintf(buffer + *len, "d,%llu,", evt->rt_data.edf.d);
+			*len += sprintf(buffer + *len, "d,%llu,", evt->tree_key);
 			*len += sprintf(buffer + *len, "D,%llu,", evt->rt_data.edf.D);
 			break;
 		default:
@@ -82,7 +83,7 @@ static int dequeue(char *buffer)
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
 		len += sprintf(buffer + len, "id,%d,", (int)trace.events[trace.read_item].task_id);
-		print_rt_tree_data(&len, buffer, & trace.events[trace.read_item]);
+		sprint_rt_tree_data(&len, buffer, & trace.events[trace.read_item]);
 #endif
 		len += sprintf(buffer + len, "pid,%d,", (int)trace.events[trace.read_item].pid);
 		len += sprintf(buffer + len, "prio,%d,", (int)trace.events[trace.read_item].prio);
@@ -113,6 +114,7 @@ static int enqueue(enum evt event, unsigned long long time, struct task_struct *
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
 	trace.events[trace.write_item].task_id = p->rt_task.id;
 	trace.events[trace.write_item].scheduler = p->rt_task.scheduler;
+	trace.events[trace.write_item].tree_key = p->rt_task.tree_key;
 	trace.events[trace.write_item].rt_data = p->rt_task.data;
 #endif
 

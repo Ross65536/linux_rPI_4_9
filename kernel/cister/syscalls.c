@@ -5,6 +5,8 @@
 
 asmlinkage long sys_cister_tracing(int enable)
 {
+	PRINT_DEBUG_MESSAGE("enable tracing hit\n")
+
 #ifdef CONFIG_CISTER_TRACING
 	enable_tracing(enable);
 	return 0;
@@ -16,7 +18,7 @@ asmlinkage long sys_cister_tracing(int enable)
 asmlinkage long sys_cister_set_task_id(int id)
 {
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-	set_task_id(id);
+	current->rt_task.id = id;
 	return 0;
 #else
 	return -1;
@@ -24,17 +26,16 @@ asmlinkage long sys_cister_set_task_id(int id)
 }
 
 
-asmlinkage long sys_cister_set_task_rd(unsigned int relative_deadline)
+asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, long subscheduler_parameter)
 {
-
-#ifdef CONSOLE_DEBUGGING 
-   printk(KERN_DEBUG "sys_cister_set_task_rd: %u\n", relative_deadline);
-#endif 
+	unsigned long long param;
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-	unsigned long long val = (unsigned long long ) relative_deadline;
-	set_task_D(val);
-	return 0;
+	PRINT_DEBUG_MESSAGE_WITH_ARGS("sched: %d, param: %ld\n", rt_subscheduler, subscheduler_parameter);
+
+	param = (unsigned long long ) subscheduler_parameter; //TODO add long long support
+
+	return set_task_rt_subsched_and_param(current, rt_subscheduler, param);
 #else
 	return -1;
 #endif

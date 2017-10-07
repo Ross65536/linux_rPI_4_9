@@ -4,16 +4,17 @@
 
 #include "defs.h"
 #include "rt_rqs.h"
-
+#include "rt_rqs_functions.h"
+#include "../sched/sched.h"
 
 static void enqueue_task_rts(struct rq *rq, struct task_struct *new_task, int flags)
 {
-	enqueue_task_tree_rt(rq, new_task);
+	enqueue_task_tree_rt(&rq->rt_rqs, &new_task->rt_task);
 }
 
 static void dequeue_task_rts(struct rq *rq, struct task_struct *old_task, int flags)
 {
-	dequeue_task_tree_rt(rq, old_task);
+	dequeue_task_tree_rt(&rq->rt_rqs, &old_task->rt_task);
 }
 
 static void check_preempt_curr_rts(struct rq *rq, struct task_struct *p, int flags)
@@ -32,7 +33,7 @@ static void check_preempt_curr_rts(struct rq *rq, struct task_struct *p, int fla
 			resched_curr(rq);	
 			break;
 		case SCHED_RTS:
-			if(check_preempt_rts_tasks(rq, &rq->curr->rt_task, &p->rt_task))
+			if(check_preempt_rts_tasks(&rq->rt_rqs, &rq->curr->rt_task, &p->rt_task))
 				resched_curr(rq);
 			break;
 		default:

@@ -8,10 +8,26 @@ void set_task_id(int id)
 	
 }
 
-void set_task_D(unsigned long long relative_deadline){
-	current->rt_task.data.edf.D = relative_deadline;
+int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_scheduler scheduler, unsigned long long param)
+{
+	struct rt_task* task = &curr_task->rt_task;
+
+	if(scheduler < 0 || scheduler >= NUM_RT_SCHEDULLERS)
+	{
+		printk(KERN_INFO "process pid: %d rt subscheduler index %d is not valid", curr_task->pid, scheduler);
+		return -2;
+	}
+
+	//TODO add rescheduling support
+
+	task->scheduler = scheduler;
 	
-	#ifdef CONSOLE_DEBUGGING 
-   	printk(KERN_DEBUG "set_task_D: %llu\n", current->rt_task.data.edf.D);
-	#endif
+	if(scheduler == EDF_INDEX)
+		task->data.edf.D = param;
+	else
+		task->tree_key = param;
+	
+   	PRINT_DEBUG_MESSAGE_WITH_ARGS("scheduler index: %d, param: %llu\n", scheduler, param);
+
+   	return 0;
 }

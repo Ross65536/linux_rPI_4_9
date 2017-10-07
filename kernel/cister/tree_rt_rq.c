@@ -1,41 +1,44 @@
 #include "rt_common.h"
 #include "rt_rqs.h"
 #include "rt_task.h"
+#include "../sched/sched.h"
+#include "defs.h"
 
-
-////////////////////////////////////////////////////
-/////// Functions specific to each rt scheduler
-////////////////////////////////////////////////////
-
-tree_key_type calc_edf_tree_key(struct rt_task* task_ptr)
+static inline void calc_update_edf_tree_key(struct rt_task* task_ptr)
 {
 	const s64 time_now = ktime_to_ns(ktime_get());
-	task_ptr->data.edf.d = time_now + task_ptr->data.edf.D;
-	return task_ptr->data.edf.d; 
+	task_ptr->tree_key = time_now + task_ptr->data.edf.D;
 }
 
+#define SEC_TO_NSEC 1000000000ULL
+static inline enum rt_scheduler get_and_check_subscheduler_index(struct rt_task *task)
+{
+	enum rt_scheduler scheduler_index = task->scheduler;
 
-static tree_key_type (* calc_tree_key_arr[])(struct rt_task*) 
-= {calc_edf_tree_key};
+	if(scheduler_index < 0 || scheduler_index >= NUM_RT_SCHEDULLERS)
+	{	
+		printk(KERN_INFO "task with id %d has invalid rt subscheduler index: %d, picking by default EDF with 1 second relative deadline\n", task->id, (int) scheduler_index);
+		scheduler_index = EDF_INDEX;
+		task->data.edf.D = SEC_TO_NSEC;
+	}
 
-////////////////////////////////////////////////////
-/////// Common Core
-////////////////////////////////////////////////////
+	return scheduler_index;
+}
 
 void init_tree_rq(struct tree_rt_rq *rq, enum rt_scheduler sched_index)
 {
 	rq->tasks_root = RB_ROOT;
 	spin_lock_init(&rq->lock);
 	rq->highest_priority_task = NULL;
-	rq->calc_tree_key = calc_tree_key_arr[sched_index];
+	
 }
 
-void push_node_to_rb_tree(struct rb_root * root, struct rt_task *new_task)
+static void push_node_to_rb_tree(struct rb_root * root, struct rt_task *new_task)
 {
 	struct rb_node **n = &root->rb_node;
 	struct rb_node *parent = *n;
 	struct rt_task * comparison_node;
-	tree_key_type new_node_key = new_task->tree_key;
+	const tree_key_type new_node_key = new_task->tree_key;
 
 	while(*n)
 	{
@@ -43,7 +46,7 @@ void push_node_to_rb_tree(struct rb_root * root, struct rt_task *new_task)
 		comparison_node = rb_entry(parent, struct rt_task, node);
 		if(new_node_key < comparison_node->tree_key)
 			n = &parent->rb_left;
-		else //if(new_node_key >= ans->d)
+		else 
 			n = &parent->rb_right;
 	}
 
@@ -62,72 +65,65 @@ static struct task_struct* get_first_task_from_root(struct rb_root* root)
 	first_node = rb_first(root);
 	if(first_node == NULL)
 	{
-		#ifdef CONFIG_CISTER_TRACING
-			printk(KERN_DEBUG "get_first_task_from_root: most priority is null \n");
-		#endif	
+		PRINT_DEBUG_MESSAGE("most priority is null \n");
 		return NULL;
 	}
 
 	first_rt_task = rb_entry(first_node, struct rt_task, node);
 	
-	p= container_of(first_rt_task, struct task_struct, rt_task);
+	p = container_of(first_rt_task, struct task_struct, rt_task);
 
-#ifdef CONFIG_CISTER_TRACING
-	printk(KERN_DEBUG "get_first_task_from_root: most priority is NOT null \n");
-#endif	
+	PRINT_DEBUG_MESSAGE("most priority is NOT null \n");
 
 	return p;
 }
 
-
-void enqueue_task_tree_rt(struct rq *curr_rq, struct task_struct *task_to_enqueue)
+static inline struct tree_rt_rq * get_tree_rq_from_task(struct rt_rqs * curr_rq, struct rt_task *task)
 {
-	const enum rt_scheduler scheduler_index = task_to_enqueue->rt_task.scheduler;
-	struct tree_rt_rq * task_tree_rq = & curr_rq->rt_rqs.rqs[scheduler_index];
-	
-	spin_lock(&task_tree_rq->lock);
-
-	task_to_enqueue->rt_task.tree_key = task_tree_rq->calc_tree_key(&task_to_enqueue->rt_task);
-
-	push_node_to_rb_tree(&task_tree_rq->tasks_root, &task_to_enqueue->rt_task);
-	task_tree_rq->highest_priority_task = get_first_task_from_root(&task_tree_rq->tasks_root);
-
-	spin_unlock(&task_tree_rq->lock);
-
-#ifdef CONFIG_CISTER_TRACING
-	cister_trace(ENQUEUE_RQ,task_to_enqueue);
-	cister_trace(MOST_PRIORITY,task_tree_rq->highest_priority_task);
-#endif
-
-	/*
-	#ifdef CONSOLE_DEBUGGING 
-	printk(KERN_DEBUG "enqueue_task_rt: time_now %lld, id %d, d %llu, D %llu \n", time_now, p->rt_task.id,
-	p->rt_task.d,p->rt_task.D);
-	#endif
-	*/
+	const enum rt_scheduler scheduler_index = task->scheduler;
+	return &curr_rq->rqs[scheduler_index];
 }
 
-void dequeue_task_tree_rt(struct rq * curr_rq, struct task_struct *task_to_dequeue)
+void enqueue_task_tree_rt(struct rt_rqs *curr_rq, struct rt_task *task_to_enqueue)
 {
-	const enum rt_scheduler scheduler_index = task_to_dequeue->rt_task.scheduler;
-	struct tree_rt_rq * task_tree_rq = & curr_rq->rt_rqs.rqs[scheduler_index];
+	struct tree_rt_rq * task_tree_rq;
+	enum rt_scheduler scheduler_index;
+
+	scheduler_index = get_and_check_subscheduler_index(task_to_enqueue);
+	task_tree_rq = &curr_rq->rqs[scheduler_index];
+	
+	spin_lock(&task_tree_rq->lock);
+
+	//TODO: maybe make more generic
+	if(scheduler_index == EDF_INDEX)
+		calc_update_edf_tree_key(task_to_enqueue);
+
+	push_node_to_rb_tree(&task_tree_rq->tasks_root, task_to_enqueue);
+	task_tree_rq->highest_priority_task = get_first_task_from_root(&task_tree_rq->tasks_root);
+
+	spin_unlock(&task_tree_rq->lock);
+
+#ifdef CONFIG_CISTER_TRACING
+	cister_trace(ENQUEUE_RQ, container_of(task_to_enqueue, struct task_struct, rt_task));
+	cister_trace(MOST_PRIORITY,task_tree_rq->highest_priority_task);
+#endif
+
+}
+
+void dequeue_task_tree_rt(struct rt_rqs * curr_rq, struct rt_task *task_to_dequeue)
+{
+	struct tree_rt_rq * task_tree_rq = get_tree_rq_from_task(curr_rq, task_to_dequeue);
 
 	spin_lock(&task_tree_rq->lock);
 
-	rb_erase(&task_to_dequeue->rt_task.node, &task_tree_rq->tasks_root);
+	rb_erase(&task_to_dequeue->node, &task_tree_rq->tasks_root);
 	task_tree_rq->highest_priority_task = get_first_task_from_root(&task_tree_rq->tasks_root);
 	
 	spin_unlock(&task_tree_rq->lock);
 
 #ifdef CONFIG_CISTER_TRACING
-	cister_trace(DEQUEUE_RQ,task_to_dequeue);
+	cister_trace(DEQUEUE_RQ,container_of(task_to_dequeue, struct task_struct, rt_task));
 	cister_trace(MOST_PRIORITY,task_tree_rq->highest_priority_task);
 #endif
 
-	/*	
-	#ifdef CONSOLE_DEBUGGING 
-	printk(KERN_DEBUG "dequeue_task_rt: id %d, d %llu, D %llu \n", task_to_dequeue->rt_task.id,
-	p->rt_task.d,p->rt_task.D);
-	#endif
-	*/
 }

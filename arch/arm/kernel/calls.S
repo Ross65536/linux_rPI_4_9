@@ -46,7 +46,7 @@
 /* 30 */	CALL(OBSOLETE(sys_utime))	/* used by libc4 */
 #ifdef CONFIG_CISTER_FRAMEWORK
 		CALL(sys_cister_set_task_id)
-		CALL(sys_cister_set_task_rd)
+		CALL(sys_cister_set_rt_subscheduler_and_params)
 #else 
 		CALL(sys_ni_syscall)		/* was sys_stty */
 		CALL(sys_ni_syscall)		/* was sys_getty */

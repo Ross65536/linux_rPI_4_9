@@ -34,6 +34,7 @@ struct trace_evt{
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
 	int task_id;
 	enum rt_scheduler scheduler;
+	tree_key_type tree_key; 
 	union rt_data rt_data;
 #endif
 };
@@ -48,5 +49,9 @@ struct trace_evt_buffer{
 void cister_trace(enum evt event, struct task_struct *p);
 
 void enable_tracing(int enable);
+
+
+
+
 
 #endif 
