@@ -1,4 +1,4 @@
-linux source for raspberry pi taken from https://github.com/raspberrypi/linux/tree/rpi-4.13.y and modified to add realtime schedulers
+linux source for raspberry pi taken from https://github.com/raspberrypi/linux/tree/master and modified to add realtime schedulers
 
 ## Environment Setup
 taken [from](https://www.raspberrypi.org/documentation/linux/kernel/building.md)
