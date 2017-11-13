@@ -32,7 +32,7 @@ static void check_preempt_curr_rts(struct rq *rq, struct task_struct *p, int fla
 			resched_curr(rq);	
 			break;
 		case SCHED_RTS:
-			if(check_preempt_rts_tasks(&rq->rt_rqs, &rq->curr->rt_task, &p->rt_task))
+			if(rq->curr->rt_task.isPreemptible && check_preempt_rts_tasks(&rq->rt_rqs, &rq->curr->rt_task, &p->rt_task))
 				resched_curr(rq);
 			break;
 		default:

@@ -1,9 +1,10 @@
 #include <linux/sched.h>
+#include <linux/types.h>
 #include "rt_task.h"
 #include "defs.h"
 
 
-int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_scheduler scheduler, unsigned long long param)
+int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_scheduler scheduler, unsigned long long param, bool isPreemptible)
 {
 	struct rt_task* task = &curr_task->rt_task;
 
@@ -21,6 +22,8 @@ int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_schedu
 		task->data.edf.D = param;
 	else
 		task->tree_key = param;
+
+	task->isPreemptible = isPreemptible;
 	
    	PRINT_DEBUG_MESSAGE_WITH_ARGS("scheduler index: %d, param: %llu\n", scheduler, param);
 

@@ -36,6 +36,7 @@ struct trace_evt{
 	enum rt_scheduler scheduler;
 	tree_key_type tree_key; 
 	union rt_data rt_data;
+	int bPreemptible;
 #endif
 };
 

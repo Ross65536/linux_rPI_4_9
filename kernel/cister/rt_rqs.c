@@ -9,8 +9,6 @@ void init_rt_rqs(struct rt_rqs *rqs)
 {
 	int i;
 
-	PRINT_DEBUG_MESSAGE("");
-
 	for(i=0; i < NUM_RT_SCHEDULLERS; i++)
 		init_tree_rq(&rqs->rqs[i], i);
 

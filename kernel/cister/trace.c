@@ -36,8 +36,10 @@ static int is_full(int r, int w)
 	return write == r;
 }
 
-static void sprint_rt_tree_data(int * len, char* buffer, struct trace_evt* evt)
+static void sprint_dequeue_rt_task(int * len, char* buffer, struct trace_evt* evt)
 {
+	*len += sprintf(buffer + *len, "id,%d,", evt->task_id);
+	*len += sprintf(buffer + *len, "bPreempt,%d,", evt->bPreemptible);
 	switch (evt->scheduler) 
 	{
 		case EDF_INDEX:
@@ -90,8 +92,7 @@ static int dequeue(char *buffer)
 		len += sprintf(buffer + len, "%s,", evt);
 
 #ifdef CONFIG_CISTER_RT_SCHEDULERS
-		len += sprintf(buffer + len, "id,%d,", (int)trace.events[trace.read_item].task_id);
-		sprint_rt_tree_data(&len, buffer, & trace.events[trace.read_item]);
+		sprint_dequeue_rt_task(&len, buffer, & trace.events[trace.read_item]);
 #endif
 		len += sprintf(buffer + len, "pid,%d,", (int)trace.events[trace.read_item].pid);
 		len += sprintf(buffer + len, "prio,%d,", (int)trace.events[trace.read_item].prio);
@@ -124,6 +125,7 @@ static int enqueue(enum evt event, unsigned long long time, struct task_struct *
 	trace.events[trace.write_item].scheduler = p->rt_task.scheduler;
 	trace.events[trace.write_item].tree_key = p->rt_task.tree_key;
 	trace.events[trace.write_item].rt_data = p->rt_task.data;
+	trace.events[trace.write_item].bPreemptible = p->rt_task.isPreemptible ? 1 : 0;
 #endif
 
 	increment(&trace.write_item);
@@ -176,16 +178,15 @@ void cister_trace(enum evt event, struct task_struct *p)
 #if defined(CONFIG_CISTER_RT_SCHEDULERS)
 	if (p->policy != SCHED_RTS)
 		return;
-#else
-	return;
-#endif
 
 	if (enabled)
-	{
-		
+	{	
 		unsigned long long time = ktime_to_ns(ktime_get());
 		enqueue(event, time, p);
 	}
+#else
+	return;
+#endif
 }
 
 void enable_tracing(int enable)

@@ -1,4 +1,5 @@
 #include <linux/syscalls.h>
+#include <linux/types.h>
 #include "trace.h"
 #include "defs.h"
 
@@ -26,7 +27,7 @@ asmlinkage long sys_cister_set_task_id(int id)
 }
 
 
-asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, unsigned long subscheduler_parameter_lower_4_bytes, unsigned long subscheduler_parameter_higher_4_bytes)
+asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, unsigned long subscheduler_parameter_lower_4_bytes, unsigned long subscheduler_parameter_higher_4_bytes, int bPreemptible)
 {
 	unsigned long long param;
 
@@ -36,7 +37,9 @@ asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, u
 	param = ( (unsigned long long) subscheduler_parameter_higher_4_bytes) << 32ULL;
 	param += (unsigned long long) subscheduler_parameter_lower_4_bytes;
 
-	return set_task_rt_subsched_and_param(current, rt_subscheduler, param);
+	bool isProcessPreemptible = bPreemptible != 0;
+
+	return set_task_rt_subsched_and_param(current, rt_subscheduler, param, isProcessPreemptible);
 #else
 	return -1;
 #endif
