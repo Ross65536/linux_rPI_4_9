@@ -92,7 +92,11 @@
 					/* 56 was sys_mpx */
 #define __NR_setpgid			(__NR_SYSCALL_BASE+ 57)
 					/* 58 was sys_ulimit */
-					/* 59 was sys_olduname */
+
+
+#define __NR_cister_update_EDF_deadline_on_wakeup 59 /* 59 was sys_olduname */
+
+
 #define __NR_umask			(__NR_SYSCALL_BASE+ 60)
 #define __NR_chroot			(__NR_SYSCALL_BASE+ 61)
 #define __NR_ustat			(__NR_SYSCALL_BASE+ 62)

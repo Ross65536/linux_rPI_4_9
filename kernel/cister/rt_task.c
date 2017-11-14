@@ -19,7 +19,10 @@ int set_task_rt_subsched_and_param(struct task_struct* curr_task, enum rt_schedu
 	task->scheduler = scheduler;
 	
 	if(scheduler == EDF_INDEX)
+	{
 		task->data.edf.D = param;
+		task->data.edf.update_deadline = true;
+	}
 	else
 		task->tree_key = param;
 

@@ -77,7 +77,9 @@
 		CALL(sys_ni_syscall)		/* was sys_mpx */
 		CALL(sys_setpgid)
 		CALL(sys_ni_syscall)		/* was sys_ulimit */
-		CALL(sys_ni_syscall)		/* was sys_olduname */
+
+		CALL(sys_cister_update_EDF_deadline_on_wakeup)	/* was sys_olduname */
+
 /* 60 */	CALL(sys_umask)
 		CALL(sys_chroot)
 		CALL(sys_ustat)

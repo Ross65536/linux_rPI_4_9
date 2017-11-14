@@ -7,7 +7,7 @@ asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, u
 
 asmlinkage long sys_cister_set_task_id(int id);
 
-
+asmlinkage long sys_cister_update_EDF_deadline_on_wakeup(int);
 
 
 #endif

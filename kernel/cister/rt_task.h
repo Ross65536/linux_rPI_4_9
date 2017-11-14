@@ -10,6 +10,7 @@
 struct edf_data
 {
 	unsigned long long D; //relative deadline
+	bool update_deadline;
 };
 
 union rt_data

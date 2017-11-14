@@ -6,8 +6,12 @@
 
 static inline void calc_update_edf_tree_key(struct rt_task* task_ptr)
 {
-	const s64 time_now = ktime_to_ns(ktime_get());
-	task_ptr->tree_key = time_now + task_ptr->data.edf.D;
+	if(task_ptr->data.edf.update_deadline)
+	{
+		const s64 time_now = ktime_to_ns(ktime_get());
+		task_ptr->tree_key = time_now + task_ptr->data.edf.D;
+		task_ptr->data.edf.update_deadline = false;
+	}
 }
 
 #define SEC_TO_NSEC 1000000000ULL

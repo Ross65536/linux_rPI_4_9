@@ -44,3 +44,20 @@ asmlinkage long sys_cister_set_rt_subscheduler_and_params(int rt_subscheduler, u
 	return -1;
 #endif
 }
+
+asmlinkage long sys_cister_update_EDF_deadline_on_wakeup(int NOT_USED)
+{
+#ifdef CONFIG_CISTER_RT_SCHEDULERS
+	const bool is_edf = (current->rt_task.scheduler == EDF_INDEX);
+	if(is_edf)
+	{	
+		current->rt_task.data.edf.update_deadline = true;
+		return 0;
+	}
+	else 
+		return -1;
+
+#else
+	return -1;
+#endif
+}
